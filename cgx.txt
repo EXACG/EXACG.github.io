@@ -1,4 +1,4 @@
 更新版本{2.14.1.0}
 新版介绍{版本：2.14.1.0|点击右侧下载开始更新文件}
 启动软件{Steam游戏解锁工具.exe}
-文件列表{\Steam游戏解锁工具.exe|https://a.unity.cn/client_api/v1/buckets/8fe78296-dcc5-49dd-95c5-6368dfa97b84/entry_by_path/content/?path=SteamT.exe}
+文件列表{\Steam游戏解锁工具.exe|https://a.unity.cn/client_api/v1/buckets/8fe78296-dcc5-49dd-95c5-6368dfa97b84/entry_by_path/content/?path=SteamT.exe分隔符}
