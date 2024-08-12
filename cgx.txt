@@ -1,4 +1,4 @@
-更新版本{2.14.3.0}
-新版介绍{版本：2.14.3.0|点击右侧下载开始更新文件}
+更新版本{2.14.5.0}
+新版介绍{版本：2.14.5.0|点击右侧下载开始更新文件}
 启动软件{Steam游戏解锁工具.exe}
-文件列表{\Steam游戏解锁工具.exe|https://a.unity3dcloud.cn/fbaf273a-9b5f-4b55-bc5c-a9bb399fc85a/1794f6148eaebf4cc14b56f0282aebe6/}
+文件列表{\Steam游戏解锁工具.exe|https://a.unity3dcloud.cn/fbaf273a-9b5f-4b55-bc5c-a9bb399fc85a/4d05db2da341f84679a9a9961299cfc4/}
