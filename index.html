@@ -106,6 +106,57 @@
                   transform: translateY(-2px);
                   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
                 }
+                
+                /* 新增样式 */
+                .info-panel {
+                  background-color: #f8f9fa;
+                  border-radius: 10px;
+                  padding: 15px;
+                  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                  max-width: 800px;
+                  margin: 0 auto;
+                  color: #333;
+                }
+                
+                .info-panel h3 {
+                  color: #5577ff;
+                  font-size: 18px;
+                  margin-top: 15px;
+                  margin-bottom: 10px;
+                  font-weight: bold;
+                }
+                
+                .info-panel p {
+                  font-size: 15px;
+                  line-height: 1.5;
+                  margin-bottom: 8px;
+                }
+                
+                .model-links {
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                  gap: 10px;
+                  margin-top: 10px;
+                }
+                
+                .model-links a {
+                  display: inline-block;
+                  background-color: #5577ff;
+                  color: white;
+                  padding: 8px 15px;
+                  border-radius: 20px;
+                  text-decoration: none;
+                  font-weight: bold;
+                  transition: all 0.3s ease;
+                  font-size: 14px;
+                }
+                
+                .model-links a:hover {
+                  background-color: #4060ee;
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                }
 
         </style>
     </head>
@@ -120,9 +171,24 @@
         </div>
         <br><div class="Result">
             <hr/>
-	    <h3>使用时避免使用{{}}等特殊符号改为()符号进行提权<br/></h3>
-            <h3>这个是一个单页实现的,可以查询源代码自行修改!<br/></h3>
-            <h3>公开使用,限制每个月10万次H200的画图请求额度! <br/>QQ:1031029814 QQ频道:<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1cg5Q4&from=246610&biz=ka">精神养老院</a></h3>
+            <div class="info-panel">
+                <h3>使用说明</h3>
+                <p>使用时避免使用{{}}等特殊符号改为()符号进行提权</p>
+                <p>这个是一个单页实现的,可以查询源代码自行修改!</p>
+                <p>公开使用,限制每个月10万次H200的画图请求额度!</p>
+                <p>QQ:1031029814 QQ频道:<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1cg5Q4&from=246610&biz=ka">精神养老院</a></p>
+                <hr/>
+                <h3>以下是更多可免费在线白嫖HF的H200画图服务(均有提供API调用)</h3>
+                <h3>限制：同IP地址一个小时内生成30张图，可以换代理IP解决</h3>
+                <div class="model-links">
+                    <a href="https://huggingface.co/spaces/Menyu/MiaoHarem" target="_blank">喵喵1.6</a>
+                    <a href="https://huggingface.co/spaces/Menyu/MiaoPixelNew" target="_blank">喵喵像素</a>
+                    <a href="https://huggingface.co/spaces/Menyu/NoobVPre06" target="_blank">NoobV预测0.6</a>
+                    <a href="https://huggingface.co/spaces/Menyu/NoobVPre065s" target="_blank">NoobV预测0.65s</a>
+                    <a href="https://huggingface.co/spaces/Menyu/NoobXL11" target="_blank">NoobXL正式版1.1</a>
+                    <a href="https://huggingface.co/spaces/Menyu/illustrious_pencil-XL" target="_blank">illustrious_pencil融合模型</a>
+                </div>
+            </div>
         </div>
         </form><br>
         
