@@ -50,13 +50,13 @@
                   
                 }
             
-            .upload-file span{ //单行显示
+            .upload-file span{
                   text-overflow: ellipsis;
                   white-space: nowrap;
                   overflow: hidden;
             }
             
-            .upload-file:hover{ //简单的hover效果
+            .upload-file:hover{
                   font-size: 55px;
                   border-color: rgb(39, 226, 81);
                 }
@@ -64,10 +64,10 @@
             .upload-file input[type='file']{
                   height: 80%;
                   width: 80%;
-                  position: absolute; //设置为绝对定位，不会影响到其余元素
+                  position: absolute;
                   top: 0;
                   right: 0;
-                  opacity: 0;   //透明度为0
+                  opacity: 0;
                   filter: alpha(opacity=0);
                   cursor: pointer;
                 }
@@ -93,7 +93,7 @@
             <hr/>
             <h3>(本项目测试版前端是随手撸出来的,可能不太美观233 但这个是一个单页实现的,可以自行修改!<br/><br/>GITHUB仓库地址:<a href="https://github.com/EXACG/nove_api_web">EXACG/nove_api_web</a></h3>
             <hr/>
-            <h3>本项目图片生成基于梦羽的Novelai的公开版计算API! <br/>公开使用,限制每个月100万次请求额度! <br/>QQ:1031029814 QQ频道:<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1cg5Q4&from=246610&biz=ka">精神养老院</a></h3>
+            <h3>公开使用,限制每个月10万次请求额度! <br/>QQ:1031029814 QQ频道:<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1cg5Q4&from=246610&biz=ka">精神养老院</a></h3>
         </div>
         </form><br>
         
@@ -107,10 +107,128 @@
         function submitdata() {
             $(".container .Result").css('display', 'block');
 			$(".container .Result").html(
-						    '<div class="alert alert-warning"><strong>Uploading 上传中</strong></div>');
+						    '<div class="alert alert-warning"><strong>生成中，请稍候...</strong></div>');
 			$(".container .ewm").css('display', 'block');
-			$(".container .Result").html(
-						'<div class="alert alert-danger" style="text-align:center;margin:0 auto"><iframe scrolling="no" frameborder="no" border="0" width="512" height="768" src="https://wakuwaku.azurewebsites.net/api/ai?tag='+$("input").val()+'&model=1&seed='+randomRange(1000,9999999)+'"/></div>');
+            
+            // 使用新的API请求方法
+            $.ajax({
+                url: 'https://mmh.vwo50.workers.dev/gradio_api/call/infer',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    data: [
+                        $("input").val(),
+                        "lowres, {bad}, error, fewer, extra, missing, worst quality, jpeg artifacts, bad quality, watermark, unfinished, displeasing, chromatic aberration, signature, extra digits, artistic error, username, scan, [abstract]",
+                        true,
+                        0,
+                        1024,
+                        1536,
+                        7,
+                        28,
+                        true
+                    ]
+                }),
+                success: function(response) {
+                    var eventId = response.event_id;
+                    // 设置结果显示容器
+                    $(".container .Result").html(
+                        '<div class="alert alert-danger" style="text-align:center;margin:0 auto"><img id="generatedImage" src="" alt="生成中..." width="512" height="512"/></div>'
+                    );
+                    
+                    // 通过SSE获取结果
+                    var eventSource = new EventSource('https://mmh.vwo50.workers.dev/gradio_api/call/infer/' + eventId);
+                    
+                    // 接收数据的处理函数
+                    eventSource.onmessage = function(event) {
+                        console.log("收到SSE消息:", event.data);
+                        
+                        // 判断是否包含图片数据
+                        if (event.data.includes("url") && event.data.includes("image.png")) {
+                            try {
+                                // 从数据中提取JSON部分（如果有data:前缀）
+                                var jsonStr = event.data;
+                                if (jsonStr.includes("data:")) {
+                                    jsonStr = jsonStr.split("data:")[1].trim();
+                                }
+                                
+                                var jsonData = JSON.parse(jsonStr);
+                                
+                                if (Array.isArray(jsonData) && jsonData.length > 0 && jsonData[0].url) {
+                                    var imageUrl = jsonData[0].url;
+                                    console.log("提取到图片URL:", imageUrl);
+                                    
+                                    // 显示生成的图片
+                                    $(".container .Result").html(
+                                        '<div class="alert alert-success" style="text-align:center;margin:0 auto"><img src="' + imageUrl + '" alt="生成的图像" width="512" height="auto"/></div>'
+                                    );
+                                    
+                                    // 关闭连接
+                                    eventSource.close();
+                                    clearTimeout(timeout); // 清除超时
+                                }
+                            } catch (e) {
+                                console.error("解析JSON数据出错:", e, "原始数据:", event.data);
+                            }
+                        }
+                    };
+                    
+                    // 专门处理complete事件
+                    eventSource.addEventListener('complete', function(event) {
+                        console.log("收到complete事件:", event.data);
+                        try {
+                            // 从数据中提取JSON部分（如果有data:前缀）
+                            var jsonStr = event.data;
+                            if (jsonStr.includes("data:")) {
+                                jsonStr = jsonStr.split("data:")[1].trim();
+                            }
+                            
+                            var jsonData = JSON.parse(jsonStr);
+                            
+                            if (Array.isArray(jsonData) && jsonData.length > 0 && jsonData[0].url) {
+                                var imageUrl = jsonData[0].url;
+                                console.log("complete事件提取到图片URL:", imageUrl);
+                                
+                                // 显示生成的图片
+                                $(".container .Result").html(
+                                    '<div class="alert alert-success" style="text-align:center;margin:0 auto"><img src="' + imageUrl + '" alt="生成的图像" width="512" height="auto"/></div>'
+                                );
+                                
+                                // 关闭连接
+                                eventSource.close();
+                                clearTimeout(timeout); // 清除超时
+                            }
+                        } catch (e) {
+                            console.error("解析complete事件数据出错:", e, "原始数据:", event.data);
+                        }
+                    });
+                    
+                    // 处理错误
+                    eventSource.onerror = function(error) {
+                        console.error("SSE连接错误:", error);
+                        eventSource.close();
+                        clearTimeout(timeout); // 清除超时
+                        $(".container .Result").html(
+                            '<div class="alert alert-danger"><strong>连接出错，请重试</strong></div>'
+                        );
+                    };
+                    
+                    // 设置超时，防止长时间无响应
+                    var timeout = setTimeout(function() {
+                        if (eventSource.readyState !== EventSource.CLOSED) {
+                            console.warn("SSE连接超时，自动关闭");
+                            eventSource.close();
+                            $(".container .Result").html(
+                                '<div class="alert alert-warning"><strong>请求超时，请重试</strong></div>'
+                            );
+                        }
+                    }, 60000); // 60秒超时
+                },
+                error: function() {
+                    $(".container .Result").html(
+                        '<div class="alert alert-danger"><strong>请求失败，请重试</strong></div>'
+                    );
+                }
+            });
         }
     </script>
 </body>
