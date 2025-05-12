@@ -36,24 +36,52 @@
 			}
             .upload-file{
                   position: relative;
-                  width: 300px;
+                  width: 80%;
+                  max-width: 600px;
+                  min-width: 300px;
                   left:0;
                   right:0;
                   margin:0 auto;
-                  padding: 10px 15px;
-                  border-radius: 5px;
+                  padding: 20px;
+                  border-radius: 8px;
                   background-color: rgb(230,230,250);
                   color: #333333;
                   font-size: 14px;
                   text-align: center;
                   overflow: hidden;
-                  
+                  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                 }
             
             .upload-file span{
                   text-overflow: ellipsis;
                   white-space: nowrap;
                   overflow: hidden;
+                  display: block;
+                  margin-bottom: 10px;
+            }
+            
+            .upload-file input[type='text']{
+                  width: 90%;
+                  padding: 10px;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                  margin-bottom: 15px;
+                  font-size: 16px;
+                  box-sizing: border-box;
+            }
+            
+            .upload-file textarea{
+                  width: 90%;
+                  padding: 10px;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                  margin-bottom: 15px;
+                  font-size: 16px;
+                  box-sizing: border-box;
+                  min-height: 40px;
+                  max-height: 200px;
+                  overflow-y: hidden;
+                  resize: none;
             }
             
             .upload-file input[type='file']{
@@ -72,23 +100,29 @@
                  max-width:80%;
                  max-height:80%;
                 }
+                
+                .btn-primary:hover {
+                  background-color: #4060ee !important;
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                }
 
         </style>
     </head>
 <body>
-    <h4 style="text-align:center;font-size:20px;">梦羽的AI绘图(测试版前端)</h4>
+    <h4 style="text-align:center;font-size:20px;">梦羽的AI绘图-MiaoHarem模型版</h4>
     <div class="container">
         <form role="form" action="#" onsubmit="return false" method="post" enctype="multipart/form-data" id="uploadForm">
         <div class="upload-file">
-        <input type="text">
         <span class="tip">请输入想要的关键词</span>
-        <button type="submit" name="submit" class="btn btn-primary btn-block" style="background:#4066ff;text-align:center;width:150px;height:30px;display:block;margin:0 auto" onclick="submitdata()">开始绘图</button>
+        <textarea placeholder="在此输入关键词..." id="keywordInput"></textarea>
+        <button type="submit" name="submit" class="btn btn-primary btn-block" style="background:#5577ff;text-align:center;width:180px;height:40px;display:block;margin:10px auto;border-radius:20px;border:none;font-size:16px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.2);transition:all 0.3s ease;" onclick="submitdata()">开始绘图</button>
         </div>
         <br><div class="Result">
             <hr/>
-            <h3>(本项目测试版前端是随手撸出来的,可能不太美观233 但这个是一个单页实现的,可以自行修改!<br/><br/>GITHUB仓库地址:<a href="https://github.com/EXACG/nove_api_web">EXACG/nove_api_web</a></h3>
+            <h3>这个是一个单页实现的,可以自行修改!<br/><br/>GITHUB仓库地址:<a href="https://github.com/EXACG/nove_api_web">EXACG/nove_api_web</a></h3>
             <hr/>
-            <h3>公开使用,限制每个月10万次请求额度! <br/>QQ:1031029814 QQ频道:<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1cg5Q4&from=246610&biz=ka">精神养老院</a></h3>
+            <h3>公开使用,限制每个月10万次H200的画图请求额度! <br/>QQ:1031029814 QQ频道:<a href="https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1cg5Q4&from=246610&biz=ka">精神养老院</a></h3>
         </div>
         </form><br>
         
@@ -99,77 +133,61 @@
     function randomRange(min, max) { // min最小值，max最大值
         return Math.floor(Math.random() * (max - min)) + min;
     }
-        function submitdata() {
-            $(".container .Result").css('display', 'block');
-			$(".container .Result").html(
-						    '<div class="alert alert-warning"><strong>生成中，请稍候...</strong></div>');
-			$(".container .ewm").css('display', 'block');
-            
-            // 使用新的API请求方法
-            $.ajax({
-                url: 'https://mmh.vwo50.workers.dev/gradio_api/call/infer',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    data: [
-                        $("input").val(),
-                        "lowres, {bad}, error, fewer, extra, missing, worst quality, jpeg artifacts, bad quality, watermark, unfinished, displeasing, chromatic aberration, signature, extra digits, artistic error, username, scan, [abstract]",
-                        true,
-                        0,
-                        1024,
-                        1536,
-                        7,
-                        28,
-                        true
-                    ]
-                }),
-                success: function(response) {
-                    var eventId = response.event_id;
-                    // 设置结果显示容器
-                    $(".container .Result").html(
-                        '<div class="alert alert-danger" style="text-align:center;margin:0 auto"><img id="generatedImage" src="" alt="生成中..." width="512" height="512"/></div>'
-                    );
+    
+    // 添加文本框自适应高度功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.getElementById('keywordInput');
+        
+        function autoResize() {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        
+        // 初始化时和输入时调整高度
+        textarea.addEventListener('input', autoResize);
+        window.addEventListener('load', autoResize);
+    });
+    
+    function submitdata() {
+        $(".container .Result").css('display', 'block');
+		$(".container .Result").html(
+					    '<div class="alert alert-warning"><strong>生成中，请稍候...</strong></div>');
+		$(".container .ewm").css('display', 'block');
+        
+        // 使用新的API请求方法
+        $.ajax({
+            url: 'https://mmh.vwo50.workers.dev/gradio_api/call/infer',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                data: [
+                    $("#keywordInput").val(),
+                    "lowres, {bad}, error, fewer, extra, missing, worst quality, jpeg artifacts, bad quality, watermark, unfinished, displeasing, chromatic aberration, signature, extra digits, artistic error, username, scan, [abstract]",
+                    true,
+                    0,
+                    1024,
+                    1536,
+                    7,
+                    28,
+                    true
+                ]
+            }),
+            success: function(response) {
+                var eventId = response.event_id;
+                // 设置结果显示容器
+                $(".container .Result").html(
+                    '<div class="alert alert-danger" style="text-align:center;margin:0 auto"><img id="generatedImage" src="" alt="生成中..." width="512" height="512"/></div>'
+                );
+                
+                // 通过SSE获取结果
+                var eventSource = new EventSource('https://mmh.vwo50.workers.dev/gradio_api/call/infer/' + eventId);
+                
+                // 接收数据的处理函数
+                eventSource.onmessage = function(event) {
+                    console.log("收到SSE消息:", event.data);
                     
-                    // 通过SSE获取结果
-                    var eventSource = new EventSource('https://mmh.vwo50.workers.dev/gradio_api/call/infer/' + eventId);
-                    
-                    // 接收数据的处理函数
-                    eventSource.onmessage = function(event) {
-                        console.log("收到SSE消息:", event.data);
-                        
-                        // 判断是否包含图片数据
-                        if (event.data.includes("url") && event.data.includes("image.png")) {
-                            try {
-                                // 从数据中提取JSON部分（如果有data:前缀）
-                                var jsonStr = event.data;
-                                if (jsonStr.includes("data:")) {
-                                    jsonStr = jsonStr.split("data:")[1].trim();
-                                }
-                                
-                                var jsonData = JSON.parse(jsonStr);
-                                
-                                if (Array.isArray(jsonData) && jsonData.length > 0 && jsonData[0].url) {
-                                    var imageUrl = jsonData[0].url;
-                                    console.log("提取到图片URL:", imageUrl);
-                                    
-                                    // 显示生成的图片
-                                    $(".container .Result").html(
-                                        '<div class="alert alert-success" style="text-align:center;margin:0 auto"><img src="' + imageUrl + '" alt="生成的图像" width="512" height="auto"/></div>'
-                                    );
-                                    
-                                    // 关闭连接
-                                    eventSource.close();
-                                    clearTimeout(timeout); // 清除超时
-                                }
-                            } catch (e) {
-                                console.error("解析JSON数据出错:", e, "原始数据:", event.data);
-                            }
-                        }
-                    };
-                    
-                    // 专门处理complete事件
-                    eventSource.addEventListener('complete', function(event) {
-                        console.log("收到complete事件:", event.data);
+                    // 判断是否包含图片数据
+                    if (event.data.includes("url") && event.data.includes("image.png")) {
                         try {
                             // 从数据中提取JSON部分（如果有data:前缀）
                             var jsonStr = event.data;
@@ -181,7 +199,7 @@
                             
                             if (Array.isArray(jsonData) && jsonData.length > 0 && jsonData[0].url) {
                                 var imageUrl = jsonData[0].url;
-                                console.log("complete事件提取到图片URL:", imageUrl);
+                                console.log("提取到图片URL:", imageUrl);
                                 
                                 // 显示生成的图片
                                 $(".container .Result").html(
@@ -193,38 +211,69 @@
                                 clearTimeout(timeout); // 清除超时
                             }
                         } catch (e) {
-                            console.error("解析complete事件数据出错:", e, "原始数据:", event.data);
+                            console.error("解析JSON数据出错:", e, "原始数据:", event.data);
                         }
-                    });
-                    
-                    // 处理错误
-                    eventSource.onerror = function(error) {
-                        console.error("SSE连接错误:", error);
-                        eventSource.close();
-                        clearTimeout(timeout); // 清除超时
-                        $(".container .Result").html(
-                            '<div class="alert alert-danger"><strong>连接出错，请重试</strong></div>'
-                        );
-                    };
-                    
-                    // 设置超时，防止长时间无响应
-                    var timeout = setTimeout(function() {
-                        if (eventSource.readyState !== EventSource.CLOSED) {
-                            console.warn("SSE连接超时，自动关闭");
-                            eventSource.close();
+                    }
+                };
+                
+                // 专门处理complete事件
+                eventSource.addEventListener('complete', function(event) {
+                    console.log("收到complete事件:", event.data);
+                    try {
+                        // 从数据中提取JSON部分（如果有data:前缀）
+                        var jsonStr = event.data;
+                        if (jsonStr.includes("data:")) {
+                            jsonStr = jsonStr.split("data:")[1].trim();
+                        }
+                        
+                        var jsonData = JSON.parse(jsonStr);
+                        
+                        if (Array.isArray(jsonData) && jsonData.length > 0 && jsonData[0].url) {
+                            var imageUrl = jsonData[0].url;
+                            console.log("complete事件提取到图片URL:", imageUrl);
+                            
+                            // 显示生成的图片
                             $(".container .Result").html(
-                                '<div class="alert alert-warning"><strong>请求超时，请重试</strong></div>'
+                                '<div class="alert alert-success" style="text-align:center;margin:0 auto"><img src="' + imageUrl + '" alt="生成的图像" width="512" height="auto"/></div>'
                             );
+                            
+                            // 关闭连接
+                            eventSource.close();
+                            clearTimeout(timeout); // 清除超时
                         }
-                    }, 60000); // 60秒超时
-                },
-                error: function() {
+                    } catch (e) {
+                        console.error("解析complete事件数据出错:", e, "原始数据:", event.data);
+                    }
+                });
+                
+                // 处理错误
+                eventSource.onerror = function(error) {
+                    console.error("SSE连接错误:", error);
+                    eventSource.close();
+                    clearTimeout(timeout); // 清除超时
                     $(".container .Result").html(
-                        '<div class="alert alert-danger"><strong>请求失败，请重试</strong></div>'
+                        '<div class="alert alert-danger"><strong>连接出错，请重试</strong></div>'
                     );
-                }
-            });
-        }
+                };
+                
+                // 设置超时，防止长时间无响应
+                var timeout = setTimeout(function() {
+                    if (eventSource.readyState !== EventSource.CLOSED) {
+                        console.warn("SSE连接超时，自动关闭");
+                        eventSource.close();
+                        $(".container .Result").html(
+                            '<div class="alert alert-warning"><strong>请求超时，请重试</strong></div>'
+                        );
+                    }
+                }, 60000); // 60秒超时
+            },
+            error: function() {
+                $(".container .Result").html(
+                    '<div class="alert alert-danger"><strong>请求失败，请重试</strong></div>'
+                );
+            }
+        });
+    }
     </script>
 </body>
 </html>
